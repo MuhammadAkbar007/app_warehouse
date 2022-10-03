@@ -10,6 +10,7 @@ public class UserDto {
     private String lastName;
     private String phoneNumber;
     private String password;
+    private Long chatId;
     private Boolean active;
     private Set<Integer> warehouseIds;
 }

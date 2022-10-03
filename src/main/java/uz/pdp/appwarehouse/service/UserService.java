@@ -2,7 +2,6 @@ package uz.pdp.appwarehouse.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.pdp.appwarehouse.entity.Product;
 import uz.pdp.appwarehouse.entity.User;
 import uz.pdp.appwarehouse.entity.Warehouse;
 import uz.pdp.appwarehouse.payload.Result;
@@ -43,16 +42,19 @@ public class UserService {
         user.setPassword(userDto.getPassword());
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setCode(codeGeneration());
+        user.setChatId(userDto.getChatId());
 
-        Set<Warehouse> warehouseSet = new HashSet<>();
-        for (Integer id : userDto.getWarehouseIds()) {
-            Optional<Warehouse> optionalWarehouse = warehouseRepository.findById(id);
-            if (!optionalWarehouse.isPresent()) return new Result("Bunday ombor topilmadi !", false, id);
-            warehouseSet.add(optionalWarehouse.get());
+        if (userDto.getWarehouseIds() != null) {
+            Set<Warehouse> warehouseSet = new HashSet<>();
+            for (Integer id : userDto.getWarehouseIds()) {
+                Optional<Warehouse> optionalWarehouse = warehouseRepository.findById(id);
+                if (!optionalWarehouse.isPresent()) return new Result("Bunday ombor topilmadi !", false, id);
+                warehouseSet.add(optionalWarehouse.get());
+            }
+            user.setWarehouses(warehouseSet);
         }
-        user.setWarehouses(warehouseSet);
         User save = userRepository.save(user);
-        return new Result("Ishchi muvaffaqqiyatli qo'shildi !", true, save);
+        return new Result(userDto.getFirstName() + " " + userDto.getLastName() + " ishchi sifatida tizimga muvaffaqqiyatli qo'shildi !", true, save);
     }
 
     public Result edit(Integer id, UserDto userDto) {
